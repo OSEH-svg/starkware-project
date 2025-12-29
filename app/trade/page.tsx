@@ -5,6 +5,7 @@ import { OrderForm } from "../components/trade/OrderForm";
 import { Chart } from "../components/trade/Chart";
 import { PositionsTable } from "../components/trade/PositionsTable";
 import { MarketStats } from "../components/trade/MarketStats";
+import { Orderbook } from "../components/trade/Orderbook";
 import { Sheet } from "../components/ui/sheet";
 import { useState } from "react";
 
@@ -36,19 +37,32 @@ export default function TradePage() {
           <MarketStats onMenuClick={() => setIsMarketsOpen(true)} />
         </div>
 
-        {/* Main Content Scroll Area for Mobile */}
-        <div className="flex-1 flex flex-col lg:h-full lg:overflow-hidden">
-          <div className="flex-1 border-b border-border relative min-h-[400px] lg:min-h-[300px]">
-            <Chart />
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col lg:flex-row lg:h-full lg:overflow-hidden">
+          {/* Chart Column (Flexible) */}
+          <div className="flex-1 flex flex-col overflow-hidden min-h-[400px]">
+            <div className="flex-1 border-b lg:border-r border-border relative">
+              <Chart />
+            </div>
+            {/* Positions Table (Bottom of Chart on Desktop) */}
+            <div className="h-64 shrink-0 border-t border-border hidden lg:block overflow-hidden">
+              <PositionsTable />
+            </div>
           </div>
 
-          {/* Mobile Order Form (Stacked below chart on mobile, hidden on desktop) */}
-          <div className="lg:hidden border-b border-border p-4 bg-background">
-            <OrderForm isMobile />
+          {/* Orderbook Column (Desktop Only - Fixed Width) */}
+          <div className="hidden lg:block w-64 border-r border-border h-full shrink-0">
+            <Orderbook />
           </div>
 
-          <div className="h-72 shrink-0 border-b lg:border-none border-border">
-            <PositionsTable />
+          {/* Mobile Stuff (Stacked) */}
+          <div className="lg:hidden">
+            <div className="border-b border-border p-4 bg-background">
+              <OrderForm isMobile />
+            </div>
+            <div className="h-72 border-b border-border">
+              <PositionsTable />
+            </div>
           </div>
         </div>
       </div>

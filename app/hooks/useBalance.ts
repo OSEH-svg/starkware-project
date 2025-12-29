@@ -18,8 +18,15 @@ export function useBalance() {
   return useQuery({
     queryKey: ["balance"],
     queryFn: async () => {
-      const response = await api.get<any, BalanceResponse>("/user/balance");
-      return response.data;
+      try {
+        const response = await api.get<any, BalanceResponse>("/user/balance");
+        return response.data;
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
+      }
     },
     retry: false,
   });

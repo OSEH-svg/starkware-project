@@ -27,8 +27,18 @@ export function usePositions() {
       // We will handle X-Api-Key injection in the API interceptor or here if available.
       // For now, assuming Global headers or public access (which is wrong for positions).
       // If no key, this will 401.
-      const response = await api.get<any, PositionsResponse>("/user/positions");
-      return response.data;
+      try {
+        const response = await api.get<any, PositionsResponse>(
+          "/user/positions"
+        );
+        return response.data;
+      } catch (error: any) {
+        // If 401 (Unauthorized), return empty list (treat as no positions/not logged in)
+        if (error.response?.status === 401) {
+          return [];
+        }
+        throw error;
+      }
     },
     retry: false, // Don't retry if 401
   });
