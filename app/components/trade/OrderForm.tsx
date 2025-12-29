@@ -1,129 +1,209 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/app/components/ui/card";
-import { Tabs } from "@/app/components/ui/tabs";
-import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
-import { ArrowUpRight, ArrowDownRight, Info } from "lucide-react";
-import { useAccount } from "@starknet-react/core";
-import { BUILDER_CODE } from "@/lib/constants";
+import { Input } from "@/app/components/ui/input";
+import { Tabs } from "@/app/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useCreateOrder } from "@/app/hooks/useCreateOrder";
+import { useBalance } from "@/app/hooks/useBalance";
+import { useMarkets } from "@/app/hooks/useMarkets";
+import { useTradeStore } from "@/app/store/useTradeStore";
 
-export function OrderForm() {
-  const [activeTab, setActiveTab] = useState("limit");
-  const [side, setSide] = useState<"long" | "short">("long");
+interface OrderFormProps {
+  isMobile?: boolean;
+}
+
+export function OrderForm({ isMobile }: OrderFormProps) {
+  const [side, setSide] = useState<"BUY" | "SELL">("BUY");
+  const [type, setType] = useState<"LIMIT" | "MARKET">("LIMIT");
+  const [size, setSize] = useState("");
+  const [price, setPrice] = useState("");
   const [leverage, setLeverage] = useState(1);
-  const { account, isConnected } = useAccount();
+
+  const { activeMarket } = useTradeStore();
+  const { mutate: createOrder, isPending } = useCreateOrder();
+  const { data: balanceData } = useBalance();
+  const { data: markets } = useMarkets();
+
+  // Find stats for active market
+  const marketStats = markets?.find(
+    (m) => m.name === activeMarket
+  )?.marketStats;
+
+  const handleSubmit = () => {
+    let finalPrice = price;
+
+    if (type === "MARKET" && marketStats) {
+      // Simple Market Order simulation: Last Price * 1.05 (Buy) or * 0.95 (Sell)
+      const basePrice = parseFloat(marketStats.lastPrice);
+      if (side === "BUY") {
+        finalPrice = (basePrice * 1.05).toFixed(2);
+      } else {
+        finalPrice = (basePrice * 0.95).toFixed(2);
+      }
+    }
+
+    createOrder(
+      {
+        market: activeMarket,
+        side,
+        size,
+        price: finalPrice,
+      },
+      {
+        onSuccess: () => {
+          alert("Order Signed and Sent!");
+          setSize("");
+          setPrice("");
+        },
+      }
+    );
+  };
 
   return (
-    <Card className="flex flex-col h-full border-l border-y-0 border-r-0 rounded-none bg-background/50 backdrop-blur-sm">
-      <CardHeader className="pb-4">
+    <div
+      className={cn(
+        "flex flex-col h-full bg-secondary/5 border-white/5",
+        isMobile ? "w-full border rounded-lg" : "w-[320px] border-l"
+      )}
+    >
+      <div className="border-b border-white/5 px-4 py-3 bg-secondary/10">
+        <h2 className="font-bold text-sm text-foreground">{activeMarket}</h2>
+      </div>
+
+      <div className="border-b border-white/5">
         <Tabs
           tabs={[
-            { id: "limit", label: "Limit" },
-            { id: "market", label: "Market" },
+            { id: "LIMIT", label: "Limit" },
+            { id: "MARKET", label: "Market" },
           ]}
-          activeTab={activeTab}
-          onChange={setActiveTab}
+          activeTab={type}
+          onChange={(id) => setType(id as "LIMIT" | "MARKET")}
+          className="bg-transparent w-full rounded-none p-0"
         />
-      </CardHeader>
-      <CardContent className="space-y-6 flex-1">
+      </div>
+
+      <div className="p-4 space-y-6 flex-1 overflow-y-auto">
         {/* Side Selector */}
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant={side === "long" ? "default" : "secondary"}
-            className={
-              side === "long"
-                ? "bg-green-500 hover:bg-green-600 text-white"
-                : ""
-            }
-            onClick={() => setSide("long")}
+        <div className="grid grid-cols-2 gap-2 bg-background/50 p-1 rounded-lg">
+          <button
+            onClick={() => setSide("BUY")}
+            className={cn(
+              "py-2 text-sm font-medium rounded-md transition-all",
+              side === "BUY"
+                ? "bg-green-500/10 text-green-500 shadow-sm"
+                : "text-muted-foreground hover:bg-white/5"
+            )}
           >
-            Long
-          </Button>
-          <Button
-            variant={side === "short" ? "default" : "secondary"}
-            className={
-              side === "short" ? "bg-red-500 hover:bg-red-600 text-white" : ""
-            }
-            onClick={() => setSide("short")}
+            Buy / Long
+          </button>
+          <button
+            onClick={() => setSide("SELL")}
+            className={cn(
+              "py-2 text-sm font-medium rounded-md transition-all",
+              side === "SELL"
+                ? "bg-red-500/10 text-red-500 shadow-sm"
+                : "text-muted-foreground hover:bg-white/5"
+            )}
           >
-            Short
-          </Button>
+            Sell / Short
+          </button>
         </div>
 
         {/* Inputs */}
         <div className="space-y-4">
-          {activeTab === "limit" && (
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground">
-                Price (USD)
-              </label>
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Price (USD)</span>
+              {type === "MARKET" && (
+                <span className="text-primary">Market Price</span>
+              )}
+            </div>
+            {type === "LIMIT" ? (
               <Input
                 type="number"
                 placeholder="0.00"
-                className="bg-secondary/50 border-transparent focus:border-primary"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
               />
-            </div>
-          )}
+            ) : (
+              <div className="h-10 px-3 py-2 rounded-md border border-input bg-muted/20 text-sm text-muted-foreground flex items-center">
+                {marketStats
+                  ? parseFloat(marketStats.lastPrice).toLocaleString()
+                  : "Loading..."}
+              </div>
+            )}
+          </div>
+
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground">
-              Size (ETH)
-            </label>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Size ({activeMarket.split("-")[0]})</span>
+            </div>
             <Input
               type="number"
               placeholder="0.00"
-              className="bg-secondary/50 border-transparent focus:border-primary"
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
             />
           </div>
 
-          {/* Leverage Slider Mockup */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Leverage</span>
-              <span className="text-foreground font-bold">{leverage}x</span>
+              <span>{leverage}x</span>
             </div>
             <input
               type="range"
               min="1"
               max="20"
+              step="1"
               value={leverage}
-              onChange={(e) => setLeverage(Number(e.target.value))}
-              className="w-full h-1 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+              onChange={(e) => setLeverage(parseInt(e.target.value))}
+              className="w-full accent-primary h-2 bg-secondary rounded-lg appearance-none cursor-pointer"
             />
+            <div className="flex justify-between text-xs text-muted-foreground px-1">
+              <span>1x</span>
+              <span>10x</span>
+              <span>20x</span>
+            </div>
           </div>
         </div>
 
-        {/* Summary */}
-        <div className="pt-4 space-y-2 text-xs text-muted-foreground">
-          <div className="flex justify-between">
-            <span>Total</span>
-            <span className="text-foreground">$0.00</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Fee (Builder)</span>
-            <span className="text-primary flex items-center gap-1">
-              0.05% <Info className="h-3 w-3" />
+        {/* Order Details */}
+        <div className="space-y-2 pt-4 border-t border-white/5 text-sm">
+          <div className="flex justify-between text-muted-foreground">
+            <span>Available</span>
+            <span className="text-foreground">
+              {balanceData
+                ? parseFloat(balanceData.availableForTrade).toLocaleString()
+                : "0.00"}{" "}
+              USD
             </span>
           </div>
-          <div className="text-[10px] text-right text-muted-foreground/50">
-            Code: {BUILDER_CODE}
+          <div className="flex justify-between text-muted-foreground">
+            <span>Builder Code</span>
+            <span className="text-primary font-mono">ANTIGRAVITY</span>
           </div>
         </div>
 
-        <Button className="w-full text-lg font-bold" disabled={!isConnected}>
-          {isConnected
-            ? side === "long"
-              ? "Buy / Long"
-              : "Sell / Short"
-            : "Connect Wallet to Trade"}
+        <Button
+          className={cn(
+            "w-full py-6 text-lg font-bold",
+            side === "BUY"
+              ? "bg-green-500 hover:bg-green-600"
+              : "bg-red-500 hover:bg-red-600"
+          )}
+          onClick={handleSubmit}
+          disabled={isPending || !size || (type === "LIMIT" && !price)}
+        >
+          {isPending
+            ? "Signing..."
+            : side === "BUY"
+            ? "Buy / Long"
+            : "Sell / Short"}
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

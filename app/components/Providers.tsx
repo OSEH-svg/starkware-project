@@ -1,10 +1,11 @@
 "use client";
 
 import { StarknetConfig, jsonRpcProvider } from "@starknet-react/core";
-import { mainnet, sepolia } from "@starknet-react/chains";
+import { mainnet } from "@starknet-react/chains";
 import { InjectedConnector } from "starknetkit/injected";
 import { WebWalletConnector } from "starknetkit/webwallet";
 import { ArgentMobileConnector } from "starknetkit/argentMobile";
+import { QueryProvider } from "./QueryProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const chains = [mainnet];
@@ -16,7 +17,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     new ArgentMobileConnector(),
   ];
 
-  function rpc(chain: any) {
+  function rpc() {
     return {
       nodeUrl: "https://starknet-mainnet.public.blastapi.io",
     };
@@ -29,7 +30,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       connectors={connectors as any}
       autoConnect
     >
-      {children}
+      <QueryProvider>{children}</QueryProvider>
     </StarknetConfig>
   );
 }

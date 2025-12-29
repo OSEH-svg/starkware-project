@@ -1,69 +1,85 @@
 "use client";
 
-import { Card } from "@/app/components/ui/card";
+import { usePositions } from "@/app/hooks/usePositions";
 import { cn } from "@/lib/utils";
 
-interface Position {
-  param: string;
-  size: string;
-  entry: number;
-  mark: number;
-  pnl: number;
-  roe: number;
-}
-
-const MOCK_POSITIONS: Position[] = [
-  //   { param: "BTC-USD", size: "0.5", entry: 64200, mark: 64500, pnl: 150, roe: 5.2 },
-];
-
 export function PositionsTable() {
+  const { data: positions, isLoading } = usePositions();
+
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        Loading positions...
+      </div>
+    );
+  }
+
+  if (!positions || positions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <p>No open positions</p>
+      </div>
+    );
+  }
+
   return (
-    <Card className="h-full border-t border-x-0 border-b-0 rounded-none bg-background/50 backdrop-blur-sm flex flex-col">
-      <div className="flex items-center px-4 py-3 border-b border-border gap-6">
-        <span className="text-sm font-bold border-b-2 border-primary pb-3 -mb-3.5 text-foreground">
-          Positions
-        </span>
-        <span className="text-sm font-medium text-muted-foreground pb-3 -mb-3.5 hover:text-foreground cursor-pointer">
-          Open Orders
-        </span>
-        <span className="text-sm font-medium text-muted-foreground pb-3 -mb-3.5 hover:text-foreground cursor-pointer">
-          History
-        </span>
-      </div>
-      <div className="p-0 overflow-auto flex-1">
-        <table className="w-full text-sm">
-          <thead className="bg-secondary/30 text-xs text-muted-foreground uppercase sticky top-0">
-            <tr>
-              <th className="px-4 py-2 text-left font-medium">Market</th>
-              <th className="px-4 py-2 text-right font-medium">Size</th>
-              <th className="px-4 py-2 text-right font-medium">Entry Price</th>
-              <th className="px-4 py-2 text-right font-medium">Mark Price</th>
-              <th className="px-4 py-2 text-right font-medium">Liq. Price</th>
-              <th className="px-4 py-2 text-right font-medium">PnL</th>
-              <th className="px-4 py-2 text-right font-medium">Action</th>
+    <div className="w-full overflow-x-auto">
+      <table className="w-full text-sm text-left">
+        <thead className="text-xs text-muted-foreground uppercase bg-white/5">
+          <tr>
+            <th className="px-4 py-3">Market</th>
+            <th className="px-4 py-3">Side</th>
+            <th className="px-4 py-3 text-right">Size</th>
+            <th className="px-4 py-3 text-right">Value</th>
+            <th className="px-4 py-3 text-right">Entry Price</th>
+            <th className="px-4 py-3 text-right">Mark Price</th>
+            <th className="px-4 py-3 text-right">Liq. Price</th>
+            <th className="px-4 py-3 text-right">PnL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {positions.map((position) => (
+            <tr
+              key={position.id}
+              className="border-b border-white/5 hover:bg-white/5 transition-colors"
+            >
+              <td className="px-4 py-3 font-medium">{position.market}</td>
+              <td
+                className={cn(
+                  "px-4 py-3 font-medium",
+                  position.side === "LONG" ? "text-green-500" : "text-red-500"
+                )}
+              >
+                {position.side}
+              </td>
+              <td className="px-4 py-3 text-right">{position.size}</td>
+              <td className="px-4 py-3 text-right">
+                {parseFloat(position.value).toLocaleString()} USD
+              </td>
+              <td className="px-4 py-3 text-right">
+                {parseFloat(position.openPrice).toLocaleString()}
+              </td>
+              <td className="px-4 py-3 text-right">
+                {parseFloat(position.markPrice).toLocaleString()}
+              </td>
+              <td className="px-4 py-3 text-right text-orange-500">
+                {parseFloat(position.liquidationPrice).toLocaleString()}
+              </td>
+              <td
+                className={cn(
+                  "px-4 py-3 text-right font-medium",
+                  parseFloat(position.unrealisedPnl) >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
+                )}
+              >
+                {parseFloat(position.unrealisedPnl) >= 0 ? "+" : ""}
+                {parseFloat(position.unrealisedPnl).toLocaleString()}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {MOCK_POSITIONS.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="text-center py-12 text-muted-foreground"
-                >
-                  No open positions
-                </td>
-              </tr>
-            ) : (
-              MOCK_POSITIONS.map((p, i) => (
-                <tr key={i}>
-                  <td className="px-4 py-3">{p.param}</td>
-                  {/* ... */}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </Card>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

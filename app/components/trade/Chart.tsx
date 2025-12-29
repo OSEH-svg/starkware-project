@@ -1,42 +1,61 @@
 "use client";
 
-import React, { useEffect, useRef, memo } from "react";
+import { useTradeStore } from "@/app/store/useTradeStore";
+import { useMarkets } from "@/app/hooks/useMarkets";
+import { useEffect, useRef } from "react";
 
-// Using a transparent iframe approach or script injection for TradingView
-// For speed, we will use the standard TradingView Widget embed snippet logic wrapped in React container.
+declare global {
+  interface Window {
+    TradingView: any;
+  }
+}
 
-export const Chart = memo(function Chart() {
-  const container = useRef<HTMLDivElement>(null);
+export function Chart() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { activeMarket } = useTradeStore();
+  const { data: markets } = useMarkets();
+
+  // Find asset name for TV symbol (e.g. BTC-USD -> BINANCE:BTCUSDT for mock)
+  // In production, we'd use our own datafeed.
+  // For MVP, we'll try to map common pairs or use a generic one.
+  const activeMarketData = markets?.find((m) => m.name === activeMarket);
+  const symbol = activeMarketData?.name.replace("-", "") + "T" || "BTCUSDT"; // Very rough mapping
 
   useEffect(() => {
-    // Check if script already exists to avoid duplicates
-    if (container.current && !container.current.querySelector("script")) {
-      const script = document.createElement("script");
-      script.src =
-        "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-      script.type = "text/javascript";
-      script.async = true;
-      script.innerHTML = JSON.stringify({
-        autosize: true,
-        symbol: "BINANCE:BTCUSDT",
-        interval: "D",
-        timezone: "Etc/UTC",
-        theme: "dark",
-        style: "1",
-        locale: "en",
-        enable_publishing: false,
-        backgroundColor: "rgba(5, 5, 5, 1)",
-        gridColor: "rgba(42, 46, 57, 0.06)",
-        hide_top_toolbar: false,
-        hide_legend: false,
-        save_image: false,
-        calendar: false,
-        hide_volume: true,
-        support_host: "https://www.tradingview.com",
-      });
-      container.current.appendChild(script);
-    }
-  }, []);
+    const script = document.createElement("script");
+    script.src = "https://s3.tradingview.com/tv.js";
+    script.async = true;
+    script.onload = () => {
+      if (window.TradingView && containerRef.current) {
+        new window.TradingView.widget({
+          autosize: true,
+          symbol: `BINANCE:${symbol}`, // Fallback to Binance for visual verification
+          interval: "1D",
+          timezone: "Etc/UTC",
+          theme: "dark",
+          style: "1",
+          locale: "en",
+          toolbar_bg: "#f1f3f6",
+          enable_publishing: false,
+          allow_symbol_change: false, // Lock to active market
+          container_id: containerRef.current.id,
+          hide_side_toolbar: false,
+          studies: ["RSI@tv-basicstudies"],
+        });
+      }
+    };
+    document.head.appendChild(script);
 
-  return <div className="h-full w-full" ref={container} />;
-});
+    return () => {
+      // Cleanup if possible, usually TV widget handles itself or we just replace container
+    };
+  }, [symbol]); // Re-run when symbol changes
+
+  return (
+    <div
+      className="h-full w-full bg-background"
+      ref={containerRef}
+      id={`tv_chart_container_${symbol}`}
+    />
+  );
+}

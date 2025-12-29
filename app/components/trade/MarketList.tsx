@@ -1,72 +1,82 @@
 "use client";
 
-import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
-import { Input } from "@/app/components/ui/input";
-import { Search, TrendingUp, TrendingDown } from "lucide-react";
+import { useMarkets } from "@/app/hooks/useMarkets";
+import { useTradeStore } from "@/app/store/useTradeStore";
 import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
 import { useState } from "react";
 
-const MOCK_MARKETS = [
-  { pair: "BTC-USD", price: 68432.5, change: 2.4 },
-  { pair: "ETH-USD", price: 3450.12, change: -1.2 },
-  { pair: "STRK-USD", price: 1.85, change: 5.7 },
-  { pair: "SOL-USD", price: 145.2, change: 3.1 },
-  { pair: "DOGE-USD", price: 0.12, change: -0.5 },
-];
-
 export function MarketList() {
+  const { data: markets, isLoading } = useMarkets();
+  const { activeMarket, setActiveMarket } = useTradeStore();
   const [search, setSearch] = useState("");
 
-  const filtered = MOCK_MARKETS.filter((m) =>
-    m.pair.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMarkets =
+    markets?.filter((m) =>
+      m.name.toLowerCase().includes(search.toLowerCase())
+    ) || [];
 
   return (
-    <Card className="h-full border-r border-y-0 border-l-0 rounded-none bg-background/50 backdrop-blur-sm flex flex-col">
-      <div className="p-4 border-b border-border">
+    <div className="flex flex-col h-full bg-secondary/5 border-r border-white/5 w-[300px]">
+      <div className="p-4 border-b border-white/5">
         <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-8 bg-secondary/50 border-none"
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
             placeholder="Search markets..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-background/50 border border-white/10 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
           />
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {filtered.map((m) => (
-          <div
-            key={m.pair}
-            className="flex justify-between items-center p-4 hover:bg-secondary/30 cursor-pointer transition-colors border-b border-border/50"
-          >
-            <div className="flex flex-col">
-              <span className="font-bold text-sm text-foreground">
-                {m.pair}
-              </span>
-              <span className="text-xs text-muted-foreground">Perpetual</span>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="font-mono text-sm">
-                {m.price.toLocaleString()}
-              </span>
-              <span
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-3 px-4 py-2 text-xs font-medium text-muted-foreground">
+          <div>Market</div>
+          <div className="text-right">Price</div>
+          <div className="text-right">24h</div>
+        </div>
+
+        {isLoading ? (
+          <div className="p-4 text-center text-xs text-muted-foreground">
+            Loading markets...
+          </div>
+        ) : (
+          filteredMarkets.map((market) => (
+            <div
+              key={market.name}
+              onClick={() => setActiveMarket(market.name)}
+              className={cn(
+                "grid grid-cols-3 px-4 py-3 cursor-pointer transition-colors border-b border-white/[0.02]",
+                activeMarket === market.name
+                  ? "bg-white/10"
+                  : "hover:bg-white/5"
+              )}
+            >
+              <div className="font-medium text-sm truncate pr-2">
+                {market.name}
+              </div>
+              <div className="text-right text-sm truncate">
+                {parseFloat(market.marketStats.lastPrice).toLocaleString()}
+              </div>
+              <div
                 className={cn(
-                  "text-xs flex items-center",
-                  m.change >= 0 ? "text-green-500" : "text-red-500"
+                  "text-right text-sm truncate",
+                  parseFloat(market.marketStats.dailyPriceChangePercentage) >= 0
+                    ? "text-green-500"
+                    : "text-red-500"
                 )}
               >
-                {m.change >= 0 ? (
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 mr-1" />
-                )}
-                {m.change}%
-              </span>
+                {parseFloat(market.marketStats.dailyPriceChangePercentage) >= 0
+                  ? "+"
+                  : ""}
+                {market.marketStats.dailyPriceChangePercentage}%
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
-    </Card>
+    </div>
   );
 }
