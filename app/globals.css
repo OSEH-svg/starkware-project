@@ -1,12 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  /* Premium Dark Theme - HSL Values */
-  --background: #050505; /* Deep Void */
+  --background: #000000; /* Deep Void */
   --foreground: #ededed;
 
   /* Brand Colors */
-  --primary: #00ff9d; /* Electric Green */
+  --primary: #7c7eff;
   --primary-foreground: #000000;
 
   --secondary: #1a1a1a;
@@ -81,4 +80,42 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
+}
+
+.gradient-border-1 {
+  background: linear-gradient(
+    5deg,
+    transparent 60%,
+    rgba(255, 255, 255, 0.8) 100%,
+    #fff 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  border-radius: 2rem;
+}
+
+.gradient-border-2 {
+  background: linear-gradient(
+    7deg,
+    transparent 80%,
+    rgba(255, 255, 255, 0.8) 85%,
+    #fff 90%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  border-radius: 2rem;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
