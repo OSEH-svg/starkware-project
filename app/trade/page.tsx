@@ -4,6 +4,7 @@ import { MarketList } from "../components/trade/MarketList";
 import { OrderForm } from "../components/trade/OrderForm";
 import { Chart } from "../components/trade/Chart";
 import { UserActivity } from "../components/trade/UserActivity";
+import { PositionsTable } from "../components/trade/PositionsTable";
 import { MarketStats } from "../components/trade/MarketStats";
 import { Orderbook } from "../components/trade/Orderbook";
 import { Sheet } from "../components/ui/sheet";
@@ -17,7 +18,7 @@ export default function TradePage() {
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)] w-full bg-background overflow-hidden relative">
       <TourOverlay steps={TRADE_TOUR_STEPS} tourId="trade" />
-    
+
       {/* Mobile Market List Sheet */}
       <Sheet
         isOpen={isMarketsOpen}
@@ -31,7 +32,10 @@ export default function TradePage() {
       </Sheet>
 
       {/* Left Sidebar: Markets (Desktop Only) */}
-      <div id="market-list-panel" className="w-64 hidden xl:block border-r border-border h-full shrink-0">
+      <div
+        id="market-list-panel"
+        className="w-64 hidden xl:block border-r border-border h-full shrink-0"
+      >
         <MarketList />
       </div>
 
@@ -44,12 +48,18 @@ export default function TradePage() {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col lg:flex-row lg:h-full lg:overflow-hidden">
           {/* Chart Column (Flexible) */}
-          <div id="chart-container" className="flex-1 flex flex-col overflow-hidden min-h-[400px]">
+          <div
+            id="chart-container"
+            className="flex-1 flex flex-col overflow-hidden min-h-[400px]"
+          >
             <div className="flex-1 border-b lg:border-r border-border relative">
               <Chart />
             </div>
             {/* Positions Table (Bottom of Chart on Desktop) */}
-            <div id="positions-table" className="h-64 shrink-0 border-t border-border hidden lg:block overflow-hidden">
+            <div
+              id="positions-table"
+              className="h-64 shrink-0 border-t border-border hidden lg:block overflow-hidden"
+            >
               <PositionsTable />
             </div>
           </div>
@@ -72,7 +82,10 @@ export default function TradePage() {
       </div>
 
       {/* Right: Order Form (Desktop Only) */}
-      <div id="order-form-panel" className="hidden lg:block w-80 border-l border-border h-full bg-background/50 shrink-0">
+      <div
+        id="order-form-panel"
+        className="hidden lg:block w-80 border-l border-border h-full bg-background/50 shrink-0"
+      >
         <OrderForm />
       </div>
     </div>
