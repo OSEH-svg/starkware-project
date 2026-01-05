@@ -6,6 +6,7 @@ import { InjectedConnector } from "starknetkit/injected";
 import { WebWalletConnector } from "starknetkit/webwallet";
 import { ArgentMobileConnector } from "starknetkit/argentMobile";
 import { QueryProvider } from "./QueryProvider";
+import { Toaster } from "sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const chains = [mainnet];
@@ -30,7 +31,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       connectors={connectors as any}
       autoConnect
     >
-      <QueryProvider>{children}</QueryProvider>
+      <QueryProvider>
+        {children}
+        <Toaster position="bottom-right" theme="dark" richColors />
+      </QueryProvider>
     </StarknetConfig>
   );
 }

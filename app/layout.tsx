@@ -9,8 +9,16 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Extended | Pro Trading",
-  description: "The premier alternative frontend for Extended DEX on Starknet.",
+  title: "Extended Pro | Advanced Starknet DEX Frontend",
+  description:
+    "Trade perps on Extended with professional tools. Self-custodial, lightning fast, and optimized for Starknet traders.",
+  keywords: ["Starknet", "DEX", "Extended", "Perpetuals", "Trading", "Crypto"],
+  openGraph: {
+    title: "Extended Pro | Advanced Starknet DEX",
+    description:
+      "The premier alternative frontend for Extended. Trade faster, earn rewards.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -29,9 +37,7 @@ export default function RootLayout({
       >
         <Providers>
           <Navbar />
-          <main className="flex min-h-screen flex-col">
-            {children}
-          </main>
+          <main className="flex min-h-screen flex-col">{children}</main>
         </Providers>
       </body>
     </html>

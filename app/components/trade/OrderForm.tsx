@@ -50,6 +50,7 @@ export function OrderForm({ isMobile }: OrderFormProps) {
         side,
         size,
         price: finalPrice,
+        type: type, // Pass the order type (LIMIT/MARKET)
       },
       {
         onSuccess: () => {
@@ -183,7 +184,7 @@ export function OrderForm({ isMobile }: OrderFormProps) {
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>Builder Code</span>
-            <span className="text-primary font-mono">ANTIGRAVITY</span>
+            <span className="text-primary font-mono">EXTENDED</span>
           </div>
         </div>
 

@@ -3,7 +3,7 @@
 import { MarketList } from "../components/trade/MarketList";
 import { OrderForm } from "../components/trade/OrderForm";
 import { Chart } from "../components/trade/Chart";
-import { PositionsTable } from "../components/trade/PositionsTable";
+import { UserActivity } from "../components/trade/UserActivity";
 import { MarketStats } from "../components/trade/MarketStats";
 import { Orderbook } from "../components/trade/Orderbook";
 import { Sheet } from "../components/ui/sheet";
@@ -46,7 +46,7 @@ export default function TradePage() {
             </div>
             {/* Positions Table (Bottom of Chart on Desktop) */}
             <div className="h-64 shrink-0 border-t border-border hidden lg:block overflow-hidden">
-              <PositionsTable />
+              <UserActivity />
             </div>
           </div>
 
@@ -61,7 +61,7 @@ export default function TradePage() {
               <OrderForm isMobile />
             </div>
             <div className="h-72 border-b border-border">
-              <PositionsTable />
+              <UserActivity />
             </div>
           </div>
         </div>

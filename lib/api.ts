@@ -6,8 +6,24 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     "User-Agent": "Extended-Frontend/1.0",
-    // We will inject X-Api-Key here if needed, or per request
   },
+});
+
+api.interceptors.request.use((config) => {
+  // Read from localStorage (persisted by zustand)
+  // Structure: { state: { apiKey: "..." } }
+  try {
+    const storage = localStorage.getItem("trade-auth-storage");
+    if (storage) {
+      const { state } = JSON.parse(storage);
+      if (state?.apiKey) {
+        config.headers["X-Api-Key"] = state.apiKey;
+      }
+    }
+  } catch (e) {
+    // Ignore parsing errors
+  }
+  return config;
 });
 
 api.interceptors.response.use(

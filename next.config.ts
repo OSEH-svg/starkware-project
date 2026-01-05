@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/proxy/:path*",
-        destination: "https://api.extended.exchange/api/v1/:path*",
+        destination: "https://api.starknet.extended.exchange/api/v1/:path*",
       },
     ];
   },
