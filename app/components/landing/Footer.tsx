@@ -13,8 +13,8 @@ export function Footer() {
         <Link href="/trade" className="text-gray-400 hover:text-white transition-colors text-sm">
           Trade
         </Link>
-        <Link href="/portfolio" className="text-gray-400 hover:text-white transition-colors text-sm">
-          Portfolio
+        <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors text-sm">
+          Dashboard
         </Link>
         <Link href="/leaderboard" className="text-gray-400 hover:text-white transition-colors text-sm">
           Leaderboard

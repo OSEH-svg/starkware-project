@@ -6,8 +6,28 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     "User-Agent": "Extended-Frontend/1.0",
-    // We will inject X-Api-Key here if needed, or per request
   },
+});
+
+api.interceptors.request.use((config) => {
+    // Dynamically import store to avoid circular deps or init issues
+    // Or access localStorage directly if simple
+    const storageItem = localStorage.getItem('auth-storage');
+    if (storageItem) {
+        try {
+            const { state } = JSON.parse(storageItem);
+            if (state?.token) {
+                // Extended likely uses "Bearer" or specialized header
+                // We'll try standard Bearer
+                config.headers.Authorization = `Bearer ${state.token}`;
+                // Also common: X-Api-Key or X-Signature
+                config.headers['X-Auth-Token'] = state.token;
+            }
+        } catch (e) {
+            // ignore
+        }
+    }
+    return config;
 });
 
 api.interceptors.response.use(

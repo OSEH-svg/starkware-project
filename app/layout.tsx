@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "./components/Providers";
 import { Navbar } from "./components/Navbar";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -32,6 +33,7 @@ export default function RootLayout({
           <main className="flex min-h-screen flex-col">
             {children}
           </main>
+          <Toaster />
         </Providers>
       </body>
     </html>

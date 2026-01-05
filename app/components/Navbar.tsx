@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { TrendingUp, ChartPie, Medal, Menu, X } from "lucide-react";
+import { TrendingUp, ChartPie, Medal, Menu, X, HelpCircle } from "lucide-react";
 import { ConnectWallet } from "./ConnectWallet";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTourStore } from "@/app/hooks/useTour";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,7 +37,7 @@ export function Navbar() {
     <>
       <nav
         className={`fixed top-0 z-50 w-full select-none transition-colors duration-300 ${
-          isScrolled || !isHome || isMobileMenuOpen
+          isScrolled || (!isHome && pathname !== "/leaderboard") || isMobileMenuOpen
             ? "bg-background/80 backdrop-blur-md border-b border-white/5 shadow-sm"
             : "bg-transparent"
         }`}
@@ -61,14 +62,39 @@ export function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            <NavLink href="/trade" icon={<TrendingUp className="h-5 w-5" />} label="Trade" />
-            <NavLink href="/portfolio" icon={<ChartPie className="h-5 w-5" />} label="Portfolio" />
+            <div id="nav-trade-link">
+                <NavLink href="/trade" icon={<TrendingUp className="h-5 w-5" />} label="Trade" />
+            </div>
+            <NavLink href="/dashboard" icon={<ChartPie className="h-5 w-5" />} label="Dashboard" />
             <NavLink href="/leaderboard" icon={<Medal className="h-5 w-5" />} label="Leaderboard" />
           </div>
 
           {/* Actions (Always visible Connect Wallet) */}
           <div className="flex items-center gap-4">
-            <ConnectWallet />
+             {/* Help / Tour Button */}
+             <button 
+                onClick={() => {
+                    if (pathname?.includes('/leaderboard')) {
+                        useTourStore.getState().startTour('leaderboard');
+                    } else if (pathname?.includes('/trade')) {
+                         useTourStore.getState().startTour('trade');
+                    } else if (pathname?.includes('/dashboard')) {
+                         useTourStore.getState().startTour('dashboard');
+                    } else {
+                         // Fallback or generic help
+                         console.log("No tour for this page");
+                    }
+                }}
+                className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-colors"
+                title="Start Tour"
+             >
+                <span className="sr-only">Help</span>
+                <HelpCircle className="w-5 h-5" />
+             </button>
+
+            <div id="nav-connect-wallet">
+                 <ConnectWallet />
+            </div>
           </div>
         </div>
       </nav>
@@ -96,20 +122,31 @@ export function Navbar() {
             >
                <div className="flex flex-col gap-6">
                   <MobileNavLink href="/trade" icon={<TrendingUp className="h-6 w-6" />} label="Trade" onClick={() => setIsMobileMenuOpen(false)} />
-                  <MobileNavLink href="/portfolio" icon={<ChartPie className="h-6 w-6" />} label="Portfolio" onClick={() => setIsMobileMenuOpen(false)} />
+                  <MobileNavLink href="/dashboard" icon={<ChartPie className="h-6 w-6" />} label="Dashboard" onClick={() => setIsMobileMenuOpen(false)} />
                   <MobileNavLink href="/leaderboard" icon={<Medal className="h-6 w-6" />} label="Leaderboard" onClick={() => setIsMobileMenuOpen(false)} />
+                  <button
+                    onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (pathname?.includes('/leaderboard')) useTourStore.getState().startTour('leaderboard');
+                        else if (pathname?.includes('/trade')) useTourStore.getState().startTour('trade');
+                        else if (pathname?.includes('/dashboard')) useTourStore.getState().startTour('dashboard');
+                    }}
+                    className="flex items-center gap-4 text-lg font-medium text-gray-300 hover:text-[#7c7eff] hover:bg-white/5 p-3 rounded-xl transition-all w-full text-left"
+                  >
+                    <div className="text-[#7c7eff]"><HelpCircle className="h-6 w-6" /></div>
+                    Help & Tour
+                  </button>
                </div>
 
                 {/* Footer in Menu */}
                <div className="mt-auto pb-12 text-xs text-gray-500">
-                  <p>© 2024 Perpify</p>
+                  <p>© 2026 Perpify</p>
                </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Spacer for non-home pages */}
       {!isHome && <div className="h-26" />}
     </>
   );
