@@ -1,14 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { LeaderboardEntry } from "@/lib/types";
 import { Podium } from "@/app/components/leaderboard/Podium";
 import { LeaderboardList } from "@/app/components/leaderboard/LeaderboardList";
-import { LeaderboardEmptyState } from "@/app/components/leaderboard/EmptyState";
-import { TourOverlay } from "@/app/components/onboarding/TourOverlay";
-import { LEADERBOARD_TOUR_STEPS } from "./tour-config";
 import {Search, SlidersHorizontal } from "lucide-react";
-import { motion } from "framer-motion";
 
 // MOCK DATA - In a real app, this would be fetched via React Query or SWR
 const MOCK_DATA: LeaderboardEntry[] = [
@@ -25,13 +20,21 @@ const MOCK_DATA: LeaderboardEntry[] = [
 ];
 
 export default function LeaderboardPage() {
-  // Developer Toggle for "Empty State" vs "Populated State"
-  // In production, this would be derived from: const { data } = useLeaderboard();
-  const [isEmptyState, setIsEmptyState] = useState(false);
-
   return (
-    <div className="flex flex-col items-center min-h-screen select-none">
+    <div className="flex flex-col items-center min-h-screen select-none relative">
       
+      {/* Coming Soon Overlay */}
+      <div className="absolute inset-0 z-40 bg-background/50 backdrop-blur-sm flex flex-col items-center justify-evenly">
+        <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#7C7EFF]/20 to-[#7C7EFF] select-none">
+              Coming Soon
+          </h2>  <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#7C7EFF]/20 to-[#7C7EFF] select-none">
+              Coming Soon
+          </h2>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#7C7EFF]/20 to-[#7C7EFF] select-none">
+              Coming Soon
+          </h2>
+      </div>
+
       <div className="bg-[url('/background.svg')] bg-cover bg-center w-full min-h-[75vh] flex flex-col items-center pt-12">
         <div className="container px-4 md:px-8 flex flex-col items-center text-center space-y-6 relative z-10 w-full">
 
@@ -45,55 +48,36 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* DEV TOGGLE - Remove in production */}
-      <div className="fixed bottom-4 right-4 z-50 opacity-10 hover:opacity-100 transition-opacity">
-          <button 
-            onClick={() => setIsEmptyState(!isEmptyState)}
-            className="bg-red-900 text-white px-2 py-1 text-xs rounded shadow-lg"
-          >
-            Toggle Empty State
-          </button>
-      </div>
+      {/* Main Content Area - Rendered but non-interactive due to overlay */}
+      <div className="container px-4 md:px-8 -mt-64 relative z-20 flex flex-col items-center w-full opacity-50 pointer-events-none">
+            <div id="leaderboard-podium" className="w-full flex justify-center mb-16">
+                <Podium topThree={MOCK_DATA.slice(0, 3)} />
+            </div>
 
-      {/* Tour Overlay */}
-      <TourOverlay steps={LEADERBOARD_TOUR_STEPS} tourId="leaderboard" />
-
-      {/* Main Content Area */}
-      <div className="container px-4 md:px-8 -mt-64 relative z-20 flex flex-col items-center w-full">
-          {isEmptyState ? (
-            <LeaderboardEmptyState />
-          ) : (
-            <>
-                <div id="leaderboard-podium" className="w-full flex justify-center mb-16">
-                    <Podium topThree={MOCK_DATA.slice(0, 3)} />
-                </div>
-
-                {/* Leaderboards Section Header & Filter */}
-                <div className="w-full max-w-4xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-                    <h2 className="text-3xl md:text-4xl font-normal text-white tracking-tight font-serif">
-                        Leaderboards
-                    </h2>
-                    
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        <div className="relative flex-1 md:w-64">
-                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                             <input 
-                                type="text" 
-                                placeholder="Search" 
-                                className="w-full bg-[#0E0F15] border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-[#7C7EFF]/50 transition-colors"
-                             />
-                        </div>
-                        <button className="p-2.5 rounded-full bg-[#0E0F15] border border-white/10 text-muted-foreground hover:text-white hover:border-white/30 transition-colors">
-                            <SlidersHorizontal className="w-4 h-4" />
-                        </button>
+            {/* Leaderboards Section Header & Filter */}
+            <div className="w-full max-w-4xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+                <h2 className="text-3xl md:text-4xl font-normal text-white tracking-tight font-serif">
+                    Leaderboards
+                </h2>
+                
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                            <input 
+                            type="text" 
+                            placeholder="Search" 
+                            className="w-full bg-[#0E0F15] border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-[#7C7EFF]/50 transition-colors"
+                            />
                     </div>
+                    <button className="p-2.5 rounded-full bg-[#0E0F15] border border-white/10 text-muted-foreground hover:text-white hover:border-white/30 transition-colors">
+                        <SlidersHorizontal className="w-4 h-4" />
+                    </button>
                 </div>
+            </div>
 
-                <div id="leaderboard-list" className="w-full flex justify-center mb-16">
-                    <LeaderboardList entries={MOCK_DATA.slice(3)} />
-                </div>
-            </>
-          )}
+            <div id="leaderboard-list" className="w-full flex justify-center mb-16">
+                <LeaderboardList entries={MOCK_DATA.slice(3)} />
+            </div>
       </div>
 
     </div>

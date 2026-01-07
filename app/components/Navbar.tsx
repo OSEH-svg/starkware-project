@@ -56,12 +56,12 @@ export function Navbar() {
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2">
                 <Image src="/Logo.svg" alt="Extended Logo" width={36} height={36} />
-                <span className="text-lg tracking-tight text-white hidden sm:block">Perpify</span>
+                <span className="text-lg tracking-tight text-white hover:text-white/80 hidden sm:block">Perpify</span>
               </Link>
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center justify-center gap-8">
             <div id="nav-trade-link">
                 <NavLink href="/trade" icon={<TrendingUp className="h-5 w-5" />} label="Trade" />
             </div>
@@ -69,7 +69,6 @@ export function Navbar() {
             <NavLink href="/leaderboard" icon={<Medal className="h-5 w-5" />} label="Leaderboard" />
           </div>
 
-          {/* Actions (Always visible Connect Wallet) */}
           <div className="flex items-center gap-4">
              {/* Help / Tour Button */}
              <button 
@@ -153,10 +152,15 @@ export function Navbar() {
 }
 
 function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+  const pathname = usePathname();
+  const isActive = pathname === href || (pathname?.startsWith(href) && href !== "/");
+
   return (
     <Link
       href={href}
-      className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-[#7c7eff] transition-colors"
+      className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+        isActive ? "text-[#7c7eff]" : "text-foreground hover:text-[#7c7eff]"
+      }`}
     >
       {icon}
       {label}
@@ -165,13 +169,18 @@ function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; l
 }
 
 function MobileNavLink({ href, icon, label, onClick }: { href: string; icon: React.ReactNode; label: string, onClick: () => void }) {
+    const pathname = usePathname();
+    const isActive = pathname === href || (pathname?.startsWith(href) && href !== "/");
+
     return (
       <Link
         href={href}
         onClick={onClick}
-        className="flex items-center gap-4 text-lg font-medium text-gray-300 hover:text-[#7c7eff] hover:bg-white/5 p-3 rounded-xl transition-all"
+        className={`flex items-center gap-4 text-lg font-medium p-3 rounded-xl transition-all ${
+            isActive ? "text-[#7c7eff] bg-white/5" : "text-gray-300 hover:text-[#7c7eff] hover:bg-white/5"
+        }`}
       >
-        <div className="text-[#7c7eff]">{icon}</div>
+        <div className={isActive ? "text-[#7c7eff]" : "text-[#7c7eff]"}>{icon}</div>
         {label}
       </Link>
     );

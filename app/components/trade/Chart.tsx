@@ -27,6 +27,7 @@ export function Chart() {
     script.async = true;
     script.onload = () => {
       if (window.TradingView && containerRef.current) {
+        containerRef.current.innerHTML = "";
         new window.TradingView.widget({
           autosize: true,
           symbol: `BINANCE:${symbol}`, // Fallback to Binance for visual verification
@@ -47,15 +48,18 @@ export function Chart() {
     document.head.appendChild(script);
 
     return () => {
-      // Cleanup if possible, usually TV widget handles itself or we just replace container
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
     };
-  }, [symbol]); // Re-run when symbol changes
+  }, [symbol]);
 
   return (
     <div
-      className="h-full w-full bg-background"
+      className="h-full w-full bg-background overflow-hidden"
       ref={containerRef}
       id={`tv_chart_container_${symbol}`}
     />
   );
+
 }

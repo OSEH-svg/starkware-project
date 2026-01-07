@@ -6,14 +6,14 @@ import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    question: "What makes this interface different?",
+    question: "What is Perpify?",
     answer:
-      "This is a specialized 'Pro' interface built on top of the Extended Protocol. We offer advanced charting, a gamified leaderboard, and portfolio tracking that is not available on the standard frontend.",
+      "Perpify is an alternative frontend for trading perpetual futures on Starknet, built on top of Extended Protocol. We provide a streamlined, powerful interface for traders who want fast execution, deep liquidity, and complete control over their positions",
   },
   {
-    question: "How do I earn rewards?",
+    question: "How is Perpify different from other perp DEXs?",
     answer:
-      "Simply by trading! Our interface routes orders with a specific Builder Code that splits fees. We return a portion of these fees to active traders in the form of competitions and prizes tracking via the Leaderboard.",
+      "Perpify combines the robust infrastructure of Extended Protocol with an intuitive, performance-focused interface. We prioritize speed, clarity, and user experience, making professional-grade perpetuals trading accessible to everyone.",
   },
   {
     question: "Can I trade with leverage?",
@@ -24,6 +24,10 @@ const FAQS = [
     question: "Do I need to deposit funds?",
     answer:
       "No. This is a non-custodial DEX. You trade directly from your Starknet wallet (Argent or Braavos). Your funds remain in your control until the moment a trade is executed on-chain.",
+  },
+  {
+    question: "Do I need technical knowledge to use Perpify",
+    answer: "Not at all. Perpify is designed for traders of all experience levels. Our interface makes it simple to connect your wallet, browse markets, and execute trades, all within minutes.",
   },
 ];
 

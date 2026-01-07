@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import "@fontsource/sanchez";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "./components/Providers";
 import { Navbar } from "./components/Navbar";
 import { Toaster } from "sonner";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   title: "Extended Pro | Advanced Starknet DEX Frontend",
@@ -32,15 +30,12 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased selection:bg-primary/30",
-          inter.variable,
-          outfit.variable
+          GeistSans.variable
         )}
       >
         <Providers>
           <Navbar />
-          <main className="flex min-h-screen flex-col">
-            {children}
-          </main>
+          <main className="flex min-h-screen flex-col">{children}</main>
           <Toaster />
         </Providers>
       </body>

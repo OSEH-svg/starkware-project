@@ -34,7 +34,7 @@ export default function TradePage() {
       {/* Left Sidebar: Markets (Desktop Only) */}
       <div
         id="market-list-panel"
-        className="w-64 hidden xl:block border-r border-border h-full shrink-0"
+        className="w-75 hidden xl:block border-r border-border h-full shrink-0"
       >
         <MarketList />
       </div>
@@ -50,7 +50,8 @@ export default function TradePage() {
           {/* Chart Column (Flexible) */}
           <div
             id="chart-container"
-            className="flex-1 flex flex-col overflow-hidden min-h-[400px]"
+            className="flex-1 flex flex-col overflow-hidden min-h-[400px] min-w-0"
+
           >
             <div className="flex-1 border-b lg:border-r border-border relative">
               <Chart />
@@ -65,7 +66,7 @@ export default function TradePage() {
           </div>
 
           {/* Orderbook Column (Desktop Only - Fixed Width) */}
-          <div className="hidden lg:block w-64 border-r border-border h-full shrink-0">
+          <div className="hidden lg:block w-60 border-r border-border h-full shrink-0 ml-2">
             <Orderbook />
           </div>
 

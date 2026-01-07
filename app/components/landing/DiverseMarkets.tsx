@@ -3,21 +3,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import Image from "next/image";
 
 // Mock Data Configuration
 const INITIAL_MARKETS = [
-  { id: "btc", name: "Bitcoin", symbol: "BTC", price: 64230.50, change: 2.4, color: "from-orange-500 to-orange-600", bg: "bg-orange-500/10", border: "border-orange-500/20" },
-  { id: "eth", name: "Ethereum", symbol: "ETH", price: 3450.12, change: 1.8, color: "from-blue-500 to-blue-600", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-  { id: "strk", name: "Starknet", symbol: "STRK", price: 1.24, change: 5.2, color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
-  { id: "bnb", name: "BNB", symbol: "BNB", price: 590.45, change: -0.5, color: "from-yellow-500 to-yellow-600", bg: "bg-yellow-500/10", border: "border-yellow-500/20" },
-  { id: "sol", name: "Solana", symbol: "SOL", price: 145.67, change: 4.1, color: "from-emerald-500 to-emerald-600", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-  { id: "avax", name: "Avalanche", symbol: "AVAX", price: 35.89, change: -1.2, color: "from-red-500 to-red-600", bg: "bg-red-500/10", border: "border-red-500/20" },
-  { id: "sei", name: "Sei", symbol: "SEI", price: 0.65, change: 8.4, color: "from-teal-500 to-teal-600", bg: "bg-teal-500/10", border: "border-teal-500/20" },
-  { id: "tron", name: "Tron", symbol: "TRX", price: 0.12, change: 0.8, color: "from-rose-500 to-rose-600", bg: "bg-rose-500/10", border: "border-rose-500/20" },
-  { id: "link", name: "Chainlink", symbol: "LINK", price: 18.45, change: 3.2, color: "from-blue-400 to-blue-500", bg: "bg-blue-400/10", border: "border-blue-400/20" },
-  { id: "matic", name: "Polygon", symbol: "MATIC", price: 0.72, change: -0.4, color: "from-purple-500 to-purple-600", bg: "bg-purple-500/10", border: "border-purple-500/20" },
-  { id: "arb", name: "Arbitrum", symbol: "ARB", price: 1.15, change: 2.1, color: "from-cyan-500 to-cyan-600", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
-  { id: "doge", name: "Dogecoin", symbol: "DOGE", price: 0.16, change: 1.5, color: "from-amber-500 to-amber-600", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+  { id: "btc", name: "Bitcoin", symbol: "BTC", price: 64230.50, change: 2.4, icon: "/icons/Bitcoin.svg" },
+  { id: "eth", name: "Ethereum", symbol: "ETH", price: 3450.12, change: 1.8, icon: "/icons/Ethereum.svg" },
+  { id: "strk", name: "Starknet", symbol: "STRK", price: 1.24, change: 5.2, icon: "/icons/Starknet.svg" },
+  { id: "bnb", name: "BNB", symbol: "BNB", price: 590.45, change: -0.5, icon: "/icons/BNB.svg" },
+  { id: "sol", name: "Solana", symbol: "SOL", price: 145.67, change: 4.1, icon: "/icons/Solana.svg" },
+  { id: "avax", name: "Avalanche", symbol: "AVAX", price: 35.89, change: -1.2, icon: "/icons/Avalanche.svg" },
+  { id: "sei", name: "Sei", symbol: "SEI", price: 0.65, change: 8.4, icon: "/icons/Sei.svg" },
+  { id: "tron", name: "Tron", symbol: "TRX", price: 0.12, change: 0.8, icon: "/icons/Tron.svg" },
+  { id: "link", name: "Chainlink", symbol: "LINK", price: 18.45, change: 3.2, icon: "/icons/Chainlink.svg" },
+  { id: "matic", name: "Polygon", symbol: "MATIC", price: 0.72, change: -0.4, icon: "/icons/Polygon.svg" },
+  { id: "arb", name: "Arbitrum", symbol: "ARB", price: 1.15, change: 2.1, icon: "/icons/Arbitrum.svg" },
+  { id: "doge", name: "Dogecoin", symbol: "DOGE", price: 0.16, change: 1.5, icon: "/icons/Dogecoin.svg" },
 ];
 
 export function DiverseMarkets() {
@@ -115,16 +116,22 @@ function MarketPill({ market }: { market: typeof INITIAL_MARKETS[0] }) {
     const isPositive = market.change >= 0;
 
     return (
-        <div className={`flex items-center gap-4 rounded-full pl-2 pr-6 py-2 border ${market.border} ${market.bg} backdrop-blur-md min-w-[280px] shrink-0 hover:bg-white/10 transition-colors duration-300`}>
-             {/* Icon Placeholder (Stylized Circle with Initial) */}
-             <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br ${market.color} shadow-lg shrink-0`}>
-                 <span className="font-bold text-white text-lg">{market.symbol[0]}</span>
+        <div className="flex items-center gap-4 rounded-full pl-2 pr-6 py-2 border border-white/5 bg-white/5 backdrop-blur-md min-w-[280px] shrink-0 hover:bg-white/10 hover:border-white/10 transition-all duration-300 group">
+             {/* Icon */}
+             <div className="w-12 h-12 rounded-full flex items-center justify-center bg-black/20 shrink-0 overflow-hidden relative p-2">
+                 <Image 
+                    src={market.icon}
+                    alt={market.name}
+                    width={48}
+                    height={48}
+                    className="object-contain w-full h-full"
+                 />
              </div>
              
              <div className="flex flex-col flex-grow">
                  <div className="flex justify-between items-center w-full">
-                      <span className="text-white font-bold">{market.name}</span>
-                      <span className="text-xs text-gray-400">{market.symbol}</span>
+                      <span className="text-white font-bold group-hover:text-[#7C7EFF] transition-colors">{market.name}</span>
+                      <span className="text-xs text-gray-500 group-hover:text-gray-400">{market.symbol}</span>
                  </div>
                  
                  <div className="flex justify-between items-center w-full mt-0.5">
